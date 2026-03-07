@@ -1,0 +1,42 @@
+title: "YeMo Koo"
+name: "YeMo Koo"
+description: "AI Researcher"
+url: "https://yemokoo.github.io"
+baseurl: ""
+
+remote_theme: "mmistakes/minimal-mistakes@4.27.1"
+
+plugins:
+  - jekyll-include-cache
+
+locale: "en-US"
+markdown: kramdown
+highlighter: rouge
+
+author:
+  name: "YeMo Koo"
+  avatar: "/assets/images/profile.jpg"
+  bio: "AI Researcher"
+  location: "Seoul, Korea"
+  email: "your-email@example.com"
+  links:
+    - label: "Google Scholar"
+      icon: "fas fa-graduation-cap"
+      url: "https://scholar.google.com/"
+    - label: "GitHub"
+      icon: "fab fa-github"
+      url: "https://github.com/yemokoo"
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: single
+      author_profile: true
+
+include:
+  - _pages
+
+sass:
+  style: compressed
