@@ -1,19 +1,15 @@
-# Editing your homepage
+# How to edit Yemo Koo's homepage
 
-This site is a standalone static GitHub Pages website inspired by the *layout direction* of chrockey.github.io, with its own implementation.
+This version uses the HTML/CSS/JavaScript structure of [chrockey.github.io](https://github.com/chrockey/chrockey.github.io), with attribution in THIRD_PARTY_NOTICES.md.
 
-## Change content
-- **Biography and links:** edit `index.html` (replace `YOUR_EMAIL@example.com`).
+- **Name and biography:** edit `index.html`. The visible animated name is in `hero.js` at `const text = 'Yemo Koo';`.
 - **News:** edit `data/news.json`.
-- **Publications:** edit `data/publications.json`. Provide an `image` path such as `/img/my-paper.png` when you have a thumbnail. Fill the `links` object with Paper, Code, Project, etc.
-- **Projects:** edit `data/projects.json`.
-- **Animated name:** change `NAME` in `hero.js`.
-- **Design:** edit the CSS variables at the top of `style.css`.
+- **Publications:** edit `data/publications.json`, using `authors` as an array of names, and `links` as an object (e.g., `{"Paper":"https://..."}`). The current author list is incomplete; replace it with the correct one.
+- **Coauthor links:** edit `data/coauthors.json`.
+- **Design:** edit `style.css`. The reference animation depends on `--accent` and `--award` colors; do not rename those variables without updating `hero.js`.
+- **Research links:** add real email/CV/Scholar links in `index.html` once available.
+- **Hero animation:** the canvas ID `hero-cloud` must match `index.html`, `style.css`, and `hero.js`.
 
-Do not publish placeholder contact information or unverified author lists. The included entries are starter content, not a complete CV.
+There is no Projects section in this version. The old project JSON file remains in the repository but is unused.
 
-## Deployment
-Merge this pull request into `main`. GitHub Pages should be configured in **Settings → Pages → Deploy from a branch → main → /(root)**. The `.nojekyll` file disables Jekyll so this site takes precedence over the old `index.md`. The old Jekyll files remain in the repository but are unused. Use relative-to-root asset paths on the user site https://yemokoo.github.io/.
-
-## Local preview
-From the project directory run `python3 -m http.server 8000` and open http://localhost:8000.
+Merge the PR and check Settings → Pages → main / root. When editing, update `main` after merging.
