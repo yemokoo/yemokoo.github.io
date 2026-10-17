@@ -1,8 +1,129 @@
-'use strict';
-function elt(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
-async function load(path){const r=await fetch(path);if(!r.ok)throw Error('Cannot load '+path);return r.json();}
-function safeLink(url){return typeof url==='string'&&(/^(https?:\/\/|mailto:|\/)/).test(url)?url:null;}
-function renderNews(items){const root=document.querySelector('#news-list');for(const n of items){const row=elt('div','news-row');row.append(elt('span','date',n.date),elt('span','',n.text));root.append(row);}}
-function renderPubs(items){const root=document.querySelector('#publication-list');for(const p of items){const row=elt('article','pub'+(p.selected?' selected':''));const image=elt('div','pub-visual');if(p.image&&safeLink(p.image)){const img=elt('img');img.src=p.image;img.alt=p.title+' illustration';img.loading='lazy';image.append(img);}else image.textContent=p.symbol||'✦';const info=elt('div');info.append(elt('div','pub-title',p.title));if(p.authors)info.append(elt('div','pub-authors',p.authors));info.append(elt('div','pub-venue',[p.venue,p.year].filter(Boolean).join(' · ')));if(p.summary)info.append(elt('div','pub-summary',p.summary));const tags=elt('div','tags');for(const [label,url] of Object.entries(p.links||{})){if(!safeLink(url))continue;const a=elt('a','',label);a.href=url;a.rel='noopener noreferrer';tags.append(a);}info.append(tags);row.append(image,info);root.append(row);}}
-function renderProjects(items){const root=document.querySelector('#project-list');for(const p of items){const row=elt('article','project');const name=elt('strong','',p.title);if(p.url&&safeLink(p.url)){const a=elt('a','',p.title+' ↗');a.href=p.url;name.replaceWith(a);}row.append(name,elt('p','',p.description));root.append(row);}}
-(async()=>{document.querySelector('#year').textContent=new Date().getFullYear();try{const [news,pubs,projects]=await Promise.all([load('/data/news.json'),load('/data/publications.json'),load('/data/projects.json')]);renderNews(news);renderPubs(pubs);renderProjects(projects);}catch(err){console.error(err);document.querySelector('#publication-list').textContent='Content could not be loaded. Please check the JSON files.';}})();
+const ME = 'Yemo Koo';
+
+async function loadJSON(path) {
+  const res = await fetch(path);
+  return res.json();
+}
+
+function renderAuthors(authors, equal, dagger, coauthors, etAl) {
+  return authors.map((name, i) => {
+    const mark = equal.includes(i) ? '*' : dagger.includes(i) ? '†' : '';
+    const star = mark ? `<sup>${mark}</sup>` : '';
+    const url = coauthors[name];
+    if (name === ME) return `<span class="me">${name}${star}</span>`;
+    if (url) return `<a href="${url}">${name}${star}</a>`;
+    return `${name}${star}`;
+  }).join(', ') + (etAl ? ', et al.' : '');
+}
+
+function renderPub(pub, coauthors) {
+  const imgDir = pub.image && pub.image.endsWith('.gif') ? 'gif' : 'img';
+  const hover = !pub.hover ? ''
+    : pub.hover.endsWith('.mp4') ? `<video class="pub-hover" src="${pub.hover}" muted${pub.hoverLoop === false ? '' : ' loop'} playsinline preload="auto"></video>`
+    : `<img class="pub-hover" src="${pub.hover}" alt="" loading="lazy">`;
+  const img = pub.image ? `<div class="pub-img"><img src="/${imgDir}/${pub.image}" alt="${pub.title}">${hover}</div>` : '';
+  const distinction = (pub.distinction || []).length > 0 ? ` (${pub.distinction.join(', ')})` : '';
+  // Awards read like jonbarron.info / wenlonghuang.com: one coloured bold line each, no badge
+  const honours = (pub.awards || []).map(a => `<div class="pub-award">${a}</div>`).join('');
+  const links = Object.entries(pub.links || {});
+  const hasAbs = pub.abstract && pub.abstract.length > 0;
+  const absLink = hasAbs ? `<a href="#" onclick="this.parentElement.nextElementSibling.classList.toggle('open');return false">Abstract</a>` : '';
+  const otherLinks = links.map(([label, url]) => `<a href="${url}">${label}</a>`).join('');
+  const absDiv = hasAbs ? `<div class="pub-abs">${pub.abstract}</div>` : '';
+
+  return `<div class="pub${pub.selected ? ' highlight' : ''}">
+  ${img}
+  <div class="pub-info">
+    <div class="pub-title">${pub.title}</div>
+    <div class="pub-authors">${renderAuthors(pub.authors, pub.equal || [], pub.dagger || [], coauthors, pub.etAl)}</div>
+    <div class="pub-venue"><em>${pub.venue}</em>, ${pub.year}${distinction}</div>
+    ${honours}
+    <div class="pub-links">${absLink}${otherLinks}</div>
+    ${absDiv}
+  </div>
+</div>`;
+}
+
+/* Leading emoji in a news item, so CSS can widen the gap after it.
+   HTML collapses runs of whitespace, so extra spaces in news.json would render as one. */
+const NEWS_EMOJI = /^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)/u;
+
+function renderNews(news, container) {
+  const VISIBLE = 5;
+  const section = document.createElement('section');
+  section.className = 'news';
+  section.id = 'news';
+  section.innerHTML = '<h2>News</h2>';
+
+  news.forEach((item, i) => {
+    const hidden = i >= VISIBLE ? ' news-hidden' : '';
+    const text = item.text.replace(NEWS_EMOJI, '<span class="news-emoji">$1</span>');
+    section.innerHTML += `<div class="news-item${hidden}"><span class="news-date">${item.date}</span><span>${text}</span></div>`;
+  });
+
+  if (news.length > VISIBLE) {
+    const btn = document.createElement('button');
+    btn.className = 'toggle';
+    btn.textContent = 'Show more';
+    btn.onclick = () => {
+      section.classList.toggle('show-all');
+      btn.textContent = btn.textContent === 'Show more' ? 'Show less' : 'Show more';
+    };
+    section.appendChild(btn);
+  }
+
+  container.appendChild(section);
+}
+
+/* Hover media show while the pointer is over a publication. On touch screens,
+   which have no hover, tapping the publication (outside its links) toggles them instead. */
+function initHoverVideos(container) {
+  const noHover = window.matchMedia('(hover: none)').matches;
+  let current = null;  // on touch screens only the most recently tapped publication stays active
+  container.querySelectorAll('.pub').forEach(el => {
+    const hover = el.querySelector('.pub-hover');
+    if (!hover) return;
+    const video = hover.tagName === 'VIDEO' ? hover : null;
+    const hide = () => {
+      el.classList.remove('active');
+      if (video) { video.pause(); video.currentTime = 0; }
+      if (current && current.el === el) current = null;
+    };
+    const show = () => {
+      if (current && current.el !== el) current.hide();
+      el.classList.add('active');
+      if (video) video.play().catch(() => {});
+      current = { el, hide };
+    };
+    if (noHover) {
+      el.addEventListener('click', e => {
+        if (e.target.closest('a')) return;
+        el.classList.contains('active') ? hide() : show();
+      });
+    } else {
+      el.addEventListener('mouseenter', show);
+      el.addEventListener('mouseleave', hide);
+    }
+  });
+}
+
+function renderPublications(pubs, coauthors, container) {
+  container.innerHTML = pubs.map(pub => renderPub(pub, coauthors)).join('');
+  initHoverVideos(container);
+}
+
+async function init() {
+  const [coauthors, publications, news] = await Promise.all([
+    loadJSON('/data/coauthors.json'),
+    loadJSON('/data/publications.json'),
+    loadJSON('/data/news.json')
+  ]);
+
+  const newsContainer = document.getElementById('news-container');
+  if (newsContainer) renderNews(news, newsContainer);
+
+  const pubContainer = document.getElementById('publication-list');
+  if (pubContainer) renderPublications(publications, coauthors, pubContainer);
+}
+
+init();
