@@ -76,9 +76,9 @@
         pts.push({
           bx: x - ow / 2, by: y - oh / 2, bz: (Math.random() - 0.5) * depth,
           // first load: start in a wide 3D cloud and fly into place
-          x: old ? old.x : (Math.random() - 0.5) * W * 1.4,
-          y: old ? old.y : (Math.random() - 0.5) * H * 3,
-          z: old ? old.z : (Math.random() - 0.5) * W * 0.8,
+          x: old ? old.x : x - ow / 2,
+          y: old ? old.y : y - oh / 2,
+          z: old ? old.z : (Math.random() - 0.5) * depth,
           vx: 0, vy: 0, vz: 0, heat: 0,
         });
       }
@@ -149,5 +149,10 @@
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(sample, 150); });
 
   const start = () => { sample(); requestAnimationFrame(frame); };
-  (document.fonts && document.fonts.load ? document.fonts.load('400 48px Lora').then(start, start) : start());
+  // Never gate the canvas on a remote webfont. Render immediately with a local fallback;
+  // rebuild the point positions when the intended font becomes available.
+  start();
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('400 48px Lora').then(() => sample()).catch(() => {});
+  }
 })();
