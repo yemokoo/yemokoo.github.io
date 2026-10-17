@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Multimodal GUI Agents",
+    "description": "Research on mobile-use agents, failure recovery and offline reinforcement learning."
+  },
+  {
+    "title": "Continual Learning & MoE",
+    "description": "Expert expansion, routing stability and knowledge preservation."
+  },
+  {
+    "title": "Embodied AI",
+    "description": "Interests in robust perception and recovery in physical environments."
+  }
+]
