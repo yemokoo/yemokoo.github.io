@@ -1,21 +1,15 @@
 [
   {
+    "id": "androidflux",
     "title": "AndroidFlux: Failure Recovery in Mobile-Use Multimodal Agents",
-    "authors": "Yemo Koo and collaborators (edit author list)",
+    "authors": [
+      "Yemo Koo"
+    ],
+    "etAl": true,
     "venue": "NeurIPS 2026 AgenticOS Workshop",
-    "year": "2026",
-    "symbol": "AF",
+    "year": 2026,
     "selected": true,
-    "summary": "Evaluation of recovery after errors in mobile-use multimodal agents.",
-    "links": {}
-  },
-  {
-    "title": "Continual Learning with Expert Expansion",
-    "authors": "Yemo Koo and collaborators (edit author list)",
-    "venue": "Research in progress",
-    "symbol": "CL",
-    "selected": false,
-    "summary": "Representation drift and knowledge retention in expert-expanding models.",
-    "links": {}
+    "links": {},
+    "abstract": "Research on failure recovery in mobile-use multimodal agents. Add the complete author list and paper links."
   }
 ]
