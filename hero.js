@@ -1,4 +1,4 @@
-/* Adapted from the interactive hero at github.com/chrockey/chrockey.github.io (MIT-licensed repository). Original credits remain at that repository.
+/* Particle hero adapted from chrockey.github.io; see THIRD_PARTY_NOTICES.md.
    Homepage hero: the name as a scanned 3D object.
    Points are sampled inside the letters as a thin slab, coloured by depth and drawn as small
    shaded spheres. The view turns toward the pointer, and points near it
@@ -51,10 +51,8 @@
     const ow = Math.round(W), oh = Math.round(H);
     const off = document.createElement('canvas'); off.width = ow; off.height = oh;
     const o = off.getContext('2d');
-    // Do not let short names blow up to massive, heavy-looking letters.
-    // The reference uses small, delicately spaced particles over a wide wordmark.
-    let size = Math.min(H * 0.48, 76, W / 10);
-    const setFont = () => { o.font = `small-caps 400 ${size}px Lora, Georgia, serif`; if ('letterSpacing' in o) o.letterSpacing = `${Math.max(1.5, size * 0.045)}px`; };
+    let size = Math.min(H * 0.66, W / 7);
+    const setFont = () => { o.font = `small-caps 400 ${size}px Lora, Georgia, serif`; };
     setFont();
     const text = 'Yemo Koo';
     const tw = o.measureText(text).width;
@@ -64,9 +62,9 @@
     const a = o.getImageData(0, 0, ow, oh).data;
     const inside = (x, y) => x >= 0 && y >= 0 && x < ow && y < oh && a[(y * ow + x) * 4 + 3] > 127;
 
-    const gap = Math.max(1.25, size / 51);          // spacing between samples
-    const depth = size * 0.09;                      // the letters are a thin slab of spheres
-    dot = Math.max(0.66, gap * 0.44);              // sphere radius: neighbours just touch
+    const gap = Math.max(1.4, size / 44);          // spacing between samples
+    const depth = size * 0.12;                      // the letters are a thin slab of spheres
+    dot = Math.max(0.85, gap * 0.62);              // sphere radius: neighbours just touch
     const prev = pts;
     pts = [];
     const jit = () => (Math.random() - 0.5) * gap * 0.9;
