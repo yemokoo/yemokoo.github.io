@@ -1,10 +1,9 @@
-/* Particle hero adapted from chrockey.github.io; see THIRD_PARTY_NOTICES.md.
-   Homepage hero: the name as a scanned 3D object.
+/* Homepage hero: the name as a scanned 3D object.
    Points are sampled inside the letters as a thin slab, coloured by depth and drawn as small
    shaded spheres. The view turns toward the pointer, and points near it
    scatter and spring back. */
 (function () {
-  const canvas = document.getElementById('name-cloud');
+  const canvas = document.getElementById('hero-cloud');
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext('2d');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -14,8 +13,8 @@
     return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
   };
   const LIT = [150, 196, 184];       // surface facing the light: light sage
-  const SHADE = hex('--green');     // surface turned away: deep sage
-  const HOT = [138, 101, 16];        // points kicked by the pointer: mustard
+  const SHADE = hex('--accent');     // surface turned away: deep sage
+  const HOT = hex('--award');        // points kicked by the pointer: mustard
   const SHADES = 12, HEATS = 4;
   const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
   // Each point is drawn as a small shaded sphere: a pre-rendered sprite per colour,
@@ -76,9 +75,9 @@
         pts.push({
           bx: x - ow / 2, by: y - oh / 2, bz: (Math.random() - 0.5) * depth,
           // first load: start in a wide 3D cloud and fly into place
-          x: old ? old.x : x - ow / 2,
-          y: old ? old.y : y - oh / 2,
-          z: old ? old.z : (Math.random() - 0.5) * depth,
+          x: old ? old.x : (Math.random() - 0.5) * W * 1.4,
+          y: old ? old.y : (Math.random() - 0.5) * H * 3,
+          z: old ? old.z : (Math.random() - 0.5) * W * 0.8,
           vx: 0, vy: 0, vz: 0, heat: 0,
         });
       }
@@ -149,10 +148,5 @@
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(sample, 150); });
 
   const start = () => { sample(); requestAnimationFrame(frame); };
-  // Never gate the canvas on a remote webfont. Render immediately with a local fallback;
-  // rebuild the point positions when the intended font becomes available.
-  start();
-  if (document.fonts && document.fonts.load) {
-    document.fonts.load('400 48px Lora').then(() => sample()).catch(() => {});
-  }
+  (document.fonts && document.fonts.load ? document.fonts.load('400 48px Lora').then(start, start) : start());
 })();
