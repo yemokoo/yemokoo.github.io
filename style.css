@@ -143,3 +143,9 @@ pre code { background: none; padding: 0; }
   .pub-img { width: 100%; max-width: 320px; }
 }
 .hl { background: var(--highlight); color: var(--text); padding: .05em .35em; border-radius: 4px; }
+
+/* Guaranteed visible heading when scripts, fonts, or canvas rendering fail */
+.hero{position:relative;min-height:150px}
+.hero-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;margin:0;font-family:'Lora',Georgia,serif;font-variant:small-caps;font-size:clamp(42px,7vw,96px);font-weight:400;letter-spacing:.045em;color:var(--accent);pointer-events:none;transition:opacity .15s}
+.hero-fallback.canvas-ready{opacity:0;visibility:hidden}
+@media(max-width:600px){.hero{min-height:96px}.hero-fallback{font-size:clamp(32px,8vw,54px)}}

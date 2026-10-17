@@ -6,6 +6,8 @@
   const canvas = document.getElementById('hero-cloud');
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext('2d');
+  // Keep the accessible HTML heading until the first non-empty canvas frame.
+  const fallback = document.getElementById('hero-fallback');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const css = getComputedStyle(document.documentElement);
   const hex = v => {
@@ -130,6 +132,7 @@
       const q = proj[i], r = dot * q[3];
       ctx.drawImage(sprites[q[4]], q[1] - r, q[2] - r, r * 2, r * 2);
     }
+    if (fallback && pts.length && proj.length) fallback.classList.add('canvas-ready');
     if (!reduceMotion) requestAnimationFrame(frame);
   }
 
