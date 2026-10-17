@@ -14,7 +14,7 @@
     return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
   };
   const LIT = [150, 196, 184];       // surface facing the light: light sage
-  const SHADE = hex('--accent');     // surface turned away: deep sage
+  const SHADE = hex('--green');     // surface turned away: deep sage
   const HOT = [138, 101, 16];        // points kicked by the pointer: mustard
   const SHADES = 12, HEATS = 4;
   const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
