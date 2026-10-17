@@ -5,13 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Yemo Koo</title>
   <meta name="description" content="Yemo Koo - AI researcher.">
-  <link rel="stylesheet" href="/style.css?v=20261017-9">
-</head>
+  
+<style>/* Satoshi (ITF Free Font License), served by Fontshare rather than committed to this public repo */
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,401,501,701&display=swap');
+/* Lora (SIL OFL) for display text: the name and section headings */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap');
+
+:root {
+  /* Sage palette: links, highlight and chips share one hue; honours are mustard/ochre text, sage's warm partner */
+  --text: #24282a;
+  --muted: #6b7075;
+  --accent: #3d6f68;
+  --border: #e5e2dc;
+  --bg: #fbfaf7;
+  --surface: #f0ede7;
+  --award: #8a6510;
+  --highlight: #edf3ef;
+  --pub-hover: #f3f1ec;
+  --chip: #e3ece8;
+  --serif: 'Lora', Georgia, serif;
+  --max-w: 800px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 1.5rem; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Nav */
+nav { border-bottom: 1px solid var(--border); }
+nav .wrap {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: .8rem; padding-bottom: .8rem;
+}
+nav .name {
+  color: var(--text); font-family: var(--serif); font-size: 1.35rem; font-weight: 400;
+  font-variant: small-caps; letter-spacing: .03em;
+}
+nav .name strong { font-weight: 400; }
+nav .name:hover { text-decoration: none; }
+nav .links a { margin-left: 1.2rem; color: var(--muted); font-size: .9rem; }
+nav .links a:hover, nav .links a.active { color: var(--accent); text-decoration: none; }
+
+
+/* Main */
+main { padding: 2rem 0 3rem; }
+
+/* Hero: the name as an interactive point cloud (hero.js) */
+.hero { margin: -.5rem 0 1rem; }
+#hero-cloud { display: block; width: 100%; height: 150px; touch-action: pan-y; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 600px) { #hero-cloud { height: 96px; } }
+
+h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
+h2 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; font-variant: small-caps; letter-spacing: .03em; margin: 2rem 0 .5rem; border-bottom: 1px solid var(--border); padding-bottom: .4rem; }
+
+/* Intro */
+.intro { margin-bottom: 2rem; }
+.intro p { margin: .6rem 0; }
+.links { margin-top: .8rem; }
+.links a { margin-right: 1rem; font-size: .9rem; }
+
+/* News */
+.news-item { display: flex; gap: .8rem; padding: .3rem 0; font-size: .9rem; }
+.news-date { color: var(--muted); white-space: nowrap; min-width: 70px; font-size: .85rem; }
+.news-emoji { margin-right: .25em; }
+.news-hidden { display: none; }
+.show-all .news-hidden { display: flex; }
+.toggle { background: none; border: none; color: var(--accent); cursor: pointer; font-size: .85rem; padding: .4rem 0; font-family: inherit; }
+.toggle:hover { text-decoration: underline; }
+
+/* Publications */
+.pub {
+  display: flex; gap: 1.4rem; align-items: center;
+  margin: 0 -1rem .6rem; padding: 1rem; border-radius: 14px;
+  transition: background-color .2s;
+}
+@media (hover: hover) { .pub:hover { background: var(--pub-hover); } }
+.pub.highlight { background: var(--highlight); }
+.pub-img {
+  width: 200px; aspect-ratio: 4 / 3; flex-shrink: 0; position: relative;
+  border-radius: 10px; overflow: hidden;
+}
+.pub-img img, .pub-img .pub-hover { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* The whole thumbnail multiplies onto the row, so white figure backgrounds
+   melt into it; inside, the hover layer covers the still normally. */
+.pub-img { background: #fff; }
+.pub-img { mix-blend-mode: multiply; }
+.pub-img .pub-hover { position: absolute; inset: 0; opacity: 0; transition: opacity .25s; background: #fff; }
+.pub.active .pub-hover { opacity: 1; }
+.pub-info { flex: 1; min-width: 0; }
+.pub-title { font-weight: 700; font-size: 1.02rem; line-height: 1.35; letter-spacing: -.005em; margin-bottom: .3rem; }
+.pub-authors { font-size: .86rem; line-height: 1.5; color: var(--muted); margin-bottom: .2rem; }
+.pub-authors a { color: var(--accent); }
+.pub-authors .me { font-weight: 700; color: var(--text); }
+sup { line-height: 0; }
+.pub-venue { font-size: .86rem; color: var(--muted); margin-bottom: .15rem; }
+.pub-venue em { color: var(--text); font-style: italic; }
+.pub-award { color: var(--award); font-size: .86rem; font-weight: 700; line-height: 1.45; }
+.pub-links { margin-top: .55rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+.pub-links a {
+  padding: .18rem .7rem; border-radius: 999px; font-size: .76rem; font-weight: 500;
+  color: var(--accent); background: var(--chip); transition: background-color .15s, color .15s;
+}
+.pub-links a:hover { background: var(--accent); color: var(--bg); text-decoration: none; }
+.pub-abs { display: none; margin-top: .6rem; padding: .7rem .8rem; background: var(--surface); border-radius: 8px; font-size: .82rem; line-height: 1.55; }
+.pub-abs.open { display: block; }
+.note { font-size: .82rem; color: var(--muted); }
+
+/* Blog */
+.post-item { padding: .8rem 0; border-bottom: 1px solid var(--border); }
+.post-item h3 { margin: 0 0 .2rem; }
+.post-meta { color: var(--muted); font-size: .82rem; margin: 0; }
+
+/* Post */
+.post-header { margin-bottom: 1.5rem; }
+.post-content img { max-width: 100%; }
+
+/* CV */
+.cv-embed { width: 100%; height: 800px; border: 1px solid var(--border); border-radius: 4px; }
+
+/* Footer */
+footer { border-top: 1px solid var(--border); padding: 1.2rem 0; font-size: .78rem; color: var(--muted); text-align: center; }
+
+/* Code */
+pre { background: var(--surface); padding: .8rem; border-radius: 6px; overflow-x: auto; font-size: .85rem; }
+code { background: var(--surface); padding: .1rem .25rem; border-radius: 3px; font-size: .85rem; }
+pre code { background: none; padding: 0; }
+
+@media (max-width: 600px) {
+  .news-item { flex-direction: column; gap: 0; }
+  .news-date { min-width: unset; }
+  .pub { flex-direction: column; align-items: flex-start; }
+  .pub-img { width: 100%; max-width: 320px; }
+}
+.hl { background: var(--highlight); color: var(--text); padding: .05em .35em; border-radius: 4px; }
+
+</style></head>
 <body>
   <main><div class="wrap">
 
     <header class="hero">
-      <h1 class="hero-fallback" id="hero-fallback">Yemo Koo</h1>
+      <h1 class="visually-hidden">Yemo Koo</h1>
       <canvas id="hero-cloud" aria-hidden="true"></canvas>
     </header>
 
@@ -26,18 +172,173 @@
       </div>
     </section>
 
-    <div id="news-container"></div>
+    <section id="news"><h2>News</h2><div class="news-item"><span class="news-date">Sep 2026</span><span>AndroidFlux accepted to the NeurIPS 2026 AgenticOS Workshop.</span></div></section>
 
     <section>
       <h2 id="publications">Publications</h2>
       <p class="note">Selected research outputs are listed below.</p>
-      <div id="publication-list"></div>
+      <div id="publication-list"><div class="pub highlight"><div class="pub-info"><div class="pub-title">AndroidFlux: Failure Recovery in Mobile-Use Multimodal Agents</div><div class="pub-authors">Yemo Koo, et al. <span class="note">(Complete author list to be added)</span></div><div class="pub-venue"><em>NeurIPS 2026 AgenticOS Workshop</em>, 2026</div></div></div></div>
     </section>
 
   </div></main>
 
   <footer><div class="wrap">&copy; 2026 Yemo Koo</div></footer>
-  <script src="/render.js?v=20261017-9"></script>
-  <script src="/hero.js?v=20261017-9"></script>
-</body>
+  
+  
+<script>/* Homepage hero: the name as a scanned 3D object.
+   Points are sampled inside the letters as a thin slab, coloured by depth and drawn as small
+   shaded spheres. The view turns toward the pointer, and points near it
+   scatter and spring back. */
+(function () {
+  const canvas = document.getElementById('hero-cloud');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  // Keep the accessible HTML heading until the first non-empty canvas frame.
+  const fallback = null;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = getComputedStyle(document.documentElement);
+  const hex = v => {
+    const h = css.getPropertyValue(v).trim().replace('#', '');
+    return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+  };
+  const LIT = [150, 196, 184];       // surface facing the light: light sage
+  const SHADE = hex('--accent');     // surface turned away: deep sage
+  const HOT = hex('--award');        // points kicked by the pointer: mustard
+  const SHADES = 12, HEATS = 4;
+  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  // Each point is drawn as a small shaded sphere: a pre-rendered sprite per colour,
+  // lit from the upper left with a soft highlight and a darker rim
+  const SPRITE = 48;
+  const sprites = [];
+  for (let h = 0; h < HEATS; h++) {
+    for (let s = 0; s < SHADES; s++) {
+      const base = mix(mix(SHADE, LIT, s / (SHADES - 1)), HOT, h / (HEATS - 1));
+      const c = document.createElement('canvas'); c.width = c.height = SPRITE;
+      const g = c.getContext('2d'), r = SPRITE / 2;
+      const grad = g.createRadialGradient(r * 0.68, r * 0.62, r * 0.05, r, r, r);
+      const rgb = v => `rgb(${v[0]},${v[1]},${v[2]})`;
+      grad.addColorStop(0, rgb(mix(base, [255, 255, 255], 0.75)));
+      grad.addColorStop(0.35, rgb(base));
+      grad.addColorStop(1, rgb(mix(base, [10, 25, 22], 0.45)));
+      g.fillStyle = grad; g.beginPath(); g.arc(r, r, r - 0.5, 0, Math.PI * 2); g.fill();
+      sprites.push(c);
+    }
+  }
+
+  let W = 0, H = 0, dpr = 1, pts = [], dot = 1;
+  const pointer = { x: -1e4, y: -1e4, active: false };
+  let yaw = 0, pitch = 0, tYaw = 0, tPitch = 0, t0 = performance.now(), last = 0;
+
+  function sample() {
+    const rect = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = rect.width; H = rect.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+
+    // Rasterise the name off-screen in the heading font
+    const ow = Math.round(W), oh = Math.round(H);
+    const off = document.createElement('canvas'); off.width = ow; off.height = oh;
+    const o = off.getContext('2d');
+    let size = Math.min(H * 0.66, W / 7);
+    const setFont = () => { o.font = `small-caps 400 ${size}px Lora, Georgia, serif`; };
+    setFont();
+    const text = 'Yemo Koo';
+    const tw = o.measureText(text).width;
+    if (tw > W * 0.86) { size *= (W * 0.86) / tw; setFont(); }
+    o.textBaseline = 'middle'; o.textAlign = 'center';
+    o.fillText(text, ow / 2, oh / 2);
+    const a = o.getImageData(0, 0, ow, oh).data;
+    const inside = (x, y) => x >= 0 && y >= 0 && x < ow && y < oh && a[(y * ow + x) * 4 + 3] > 127;
+
+    const gap = Math.max(1.4, size / 44);          // spacing between samples
+    const depth = size * 0.12;                      // the letters are a thin slab of spheres
+    dot = Math.max(0.85, gap * 0.62);              // sphere radius: neighbours just touch
+    const prev = pts;
+    pts = [];
+    const jit = () => (Math.random() - 0.5) * gap * 0.9;
+    for (let gy = 0; gy < oh; gy += gap) {
+      for (let gx = 0; gx < ow; gx += gap) {
+        const x = gx + jit(), y = gy + jit();
+        if (!inside(Math.round(x), Math.round(y))) continue;
+        const old = prev[pts.length];
+        pts.push({
+          bx: x - ow / 2, by: y - oh / 2, bz: (Math.random() - 0.5) * depth,
+          // first load: start in a wide 3D cloud and fly into place
+          x: old ? old.x : (Math.random() - 0.5) * W * 1.4,
+          y: old ? old.y : (Math.random() - 0.5) * H * 3,
+          z: old ? old.z : (Math.random() - 0.5) * W * 0.8,
+          vx: 0, vy: 0, vz: 0, heat: 0,
+        });
+      }
+    }
+    if (reduceMotion) pts.forEach(p => { p.x = p.bx; p.y = p.by; p.z = p.bz; });
+  }
+
+  function frame(now) {
+    const t = (now - t0) / 1000;
+    // physics is tuned for 60 fps; scale it so 120 Hz screens move at the same speed
+    const k60 = last ? Math.min(3, (now - last) / 16.7) : 1; last = now;
+    const spring = 0.045 * k60, damp = Math.pow(0.82, k60), ease = 1 - Math.pow(0.94, k60);
+    // idle sway, overridden by the pointer when it moves
+    if (!pointer.active) { tYaw = Math.sin(t * 0.5) * 0.12; tPitch = Math.sin(t * 0.37) * 0.05; }
+    yaw += (tYaw - yaw) * ease; pitch += (tPitch - pitch) * ease;
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const f = Math.max(W * 1.1, 900);
+    const R = Math.max(50, H * 0.45);
+    const depth3 = Math.max(20, H * 0.3);   // depth range used for colouring
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const proj = new Array(pts.length);
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      p.vx += (p.bx - p.x) * spring; p.vy += (p.by - p.y) * spring; p.vz += (p.bz - p.z) * spring;
+      // rotate (yaw about y, then pitch about x) and project
+      const x1 = p.x * cy + p.z * sy, z1 = -p.x * sy + p.z * cy;
+      const y2 = p.y * cp - z1 * sp, z2 = p.y * sp + z1 * cp;
+      const s = f / (f + z2);
+      const sx = W / 2 + x1 * s, syy = H / 2 + y2 * s;
+      // pointer pushes nearby points away in screen space and toward the viewer
+      const dx = sx - pointer.x, dy = syy - pointer.y, d2 = dx * dx + dy * dy;
+      if (d2 < R * R) {
+        const d = Math.sqrt(d2) || 1, k = (1 - d / R) * 2.2 * k60;
+        p.vx += (dx / d) * k; p.vy += (dy / d) * k; p.vz -= k * 1.4;
+        p.heat = Math.min(1, p.heat + 0.2);
+      }
+      p.vx *= damp; p.vy *= damp; p.vz *= damp;
+      p.x += p.vx * k60; p.y += p.vy * k60; p.z += p.vz * k60;
+      p.heat *= Math.pow(0.965, k60);
+      // nearer spheres are lighter, farther ones deeper sage
+      const near = Math.min(1, Math.max(0, 0.5 - z2 / (depth3 * 2)));
+      const shade = Math.round(near * (SHADES - 1));
+      const heat = Math.min(HEATS - 1, Math.round(p.heat * (HEATS - 1)));
+      proj[i] = [z2, sx, syy, s, heat * SHADES + shade];
+    }
+    proj.sort((a, b) => b[0] - a[0]);   // far to near, so the front face covers the walls behind it
+    for (let i = 0; i < proj.length; i++) {
+      const q = proj[i], r = dot * q[3];
+      ctx.drawImage(sprites[q[4]], q[1] - r, q[2] - r, r * 2, r * 2);
+    }
+    if (fallback && pts.length && proj.length) fallback.classList.add('canvas-ready');
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('pointermove', e => {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x = e.clientX - rect.left; pointer.y = e.clientY - rect.top;
+    pointer.active = true;
+    // the whole window steers the view, so the name follows the pointer from anywhere on the page
+    tYaw = ((e.clientX / window.innerWidth) - 0.5) * 0.3;
+    tPitch = Math.max(-0.12, Math.min(0.12, -((e.clientY - (rect.top + rect.height / 2)) / window.innerHeight) * 0.2));
+  }, { passive: true });
+  window.addEventListener('pointerleave', () => { pointer.active = false; pointer.x = pointer.y = -1e4; });
+  document.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { pointer.x = pointer.y = -1e4; pointer.active = false; } });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(sample, 150); });
+
+  const start = () => { sample(); requestAnimationFrame(frame); };
+  (document.fonts && document.fonts.load ? document.fonts.load('400 48px Lora').then(start, start) : start());
+})();
+</script></body>
 </html>
